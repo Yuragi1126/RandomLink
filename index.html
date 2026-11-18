@@ -2,217 +2,299 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>リンク付き名前ルーレット</title>
-  <style>
-    body {
-      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-      background-color: #f4f6f9;
-      color: #333;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>リンク付き名前ルーレット</title>
 
-    .container {
-      max-width: 900px;
-      width: 100%;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      padding: 24px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      box-sizing: border-box;
-    }
+<style>
+* { box-sizing: border-box; }
 
-    .wheel-section {
-      flex: 1;
-      min-width: 280px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+body {
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", Meiryo, sans-serif;
+  background: #f4f6f9;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
 
-    .wheel-wrapper {
-      position: relative;
-      width: 320px;
-      max-width: 100%;
-      aspect-ratio: 1;
-      margin-bottom: 20px;
-    }
+.container {
+  max-width: 1000px;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
 
-    .pointer {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 14px solid transparent;
-      border-right: 14px solid transparent;
-      border-top: 26px solid #e74c3c;
-      z-index: 10;
-      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-    }
+.wheel-section {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    canvas {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+.wheel-wrapper {
+  position: relative;
+  width: 320px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: 20px;
+}
 
-    .spin-btn {
-      background: #2ecc71;
-      color: #fff;
-      border: none;
-      padding: 14px 40px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
-    }
+.pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 26px solid #e74c3c;
+  z-index: 10;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+}
 
-    .spin-btn:hover { background: #27ae60; }
-    .spin-btn:active { transform: scale(0.97); }
-    .spin-btn:disabled {
-      background: #bdc3c7;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
 
-    .result-box {
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 10px;
-      background: #eef7ff;
-      border: 2px solid #3498db;
-      text-align: center;
-      width: 100%;
-      box-sizing: border-box;
-      display: none;
-    }
+.spin-btn {
+  background: #2ecc71;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(46,204,113,0.3);
+}
 
-    .result-name {
-      font-size: 22px;
-      font-weight: bold;
-      color: #2c3e50;
-      margin-bottom: 12px;
-      overflow-wrap: anywhere;
-    }
+.spin-btn:hover { background: #27ae60; }
 
-    .open-link-btn {
-      display: inline-block;
-      background: #3498db;
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 24px;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
+.spin-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
 
-    .open-link-btn:hover { background: #2980b9; }
+.result-box {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #eef7ff;
+  border: 2px solid #3498db;
+  text-align: center;
+  width: 100%;
+  display: none;
+}
 
-    .no-link-note {
-      font-size: 14px;
-      color: #7f8c8d;
-    }
+.result-name {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}
 
-    .settings-section {
-      flex: 1;
-      min-width: 280px;
-    }
+.open-link-btn {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: bold;
+}
 
-    h2 {
-      margin-top: 0;
-      font-size: 18px;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 8px;
-    }
+.open-link-btn:hover { background: #2980b9; }
 
-    .item-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 360px;
-      overflow-y: auto;
-      margin-bottom: 12px;
-      padding-right: 4px;
-    }
+.no-link-note {
+  font-size: 14px;
+  color: #7f8c8d;
+}
 
-    .item-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
+.settings-section {
+  flex: 1;
+  min-width: 280px;
+}
 
-    .item-row input {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      min-width: 0;
-      box-sizing: border-box;
-    }
+h2 {
+  margin-top: 0;
+  font-size: 18px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+}
 
-    .input-name { width: 35%; }
-    .input-url { width: 55%; }
+h3 {
+  font-size: 15px;
+  margin: 18px 0 8px;
+}
 
-    .del-btn {
-      background: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      width: 32px;
-      height: 34px;
-      flex-shrink: 0;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.help-text {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.7;
+  margin-top: 6px;
+}
 
-    .del-btn:hover { background: #c0392b; }
+/* 一括入力エリア */
 
-    .add-btn {
-      background: #34495e;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      width: 100%;
-    }
+.bulk-section {
+  background: #f8f9fb;
+  border: 1px solid #e1e5eb;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 22px;
+}
 
-    .add-btn:hover { background: #2c3e50; }
+.bulk-section h3 {
+  margin-top: 0;
+}
 
-    .help-text {
-      font-size: 12px;
-      color: #888;
-      margin-top: 8px;
-      line-height: 1.6;
-    }
+.bulk-editor {
+  margin-bottom: 14px;
+}
 
-    @media (max-width: 600px) {
-      body { padding: 10px; }
-      .container { padding: 16px; gap: 25px; }
-      .wheel-section, .settings-section { min-width: 100%; }
-      .wheel-wrapper { width: 280px; }
-    }
-  </style>
+.bulk-editor label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.numbered-editor {
+  display: flex;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border: 1px solid #cbd1d9;
+  border-radius: 6px;
+  background: white;
+}
+
+.line-numbers {
+  width: 38px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #edf0f4;
+  color: #929ba7;
+  text-align: right;
+  padding: 10px 8px 10px 0;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  line-height: 24px;
+  user-select: none;
+  white-space: pre;
+}
+
+.numbered-editor textarea {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  line-height: 24px;
+  white-space: pre;
+  overflow: auto;
+  color: #333;
+}
+
+.bulk-btn {
+  width: 100%;
+  padding: 12px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bulk-btn:hover { background: #2980b9; }
+
+/* 通常の入力エリア */
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding-right: 4px;
+}
+
+.item-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.item-row input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.input-name { width: 35%; }
+.input-url { width: 55%; }
+
+.del-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 34px;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-btn {
+  background: #34495e;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  .container { padding: 16px; gap: 25px; }
+  .wheel-section, .settings-section { min-width: 100%; }
+  .wheel-wrapper { width: 280px; }
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <!-- ルーレット表示エリア -->
+  <!-- ルーレット -->
+
   <div class="wheel-section">
 
     <div class="wheel-wrapper">
@@ -231,10 +313,61 @@
 
   </div>
 
-  <!-- 項目編集エリア -->
+  <!-- 設定 -->
+
   <div class="settings-section">
 
     <h2>名前とリンクの設定</h2>
+
+    <!-- 一括入力 -->
+
+    <div class="bulk-section">
+
+      <h3>一括入力</h3>
+
+      <p class="help-text">
+        1行につき1つの名前・URLを入力してください。
+        左側の数字は行番号です。
+        名前とURLは同じ番号同士が紐付きます。
+      </p>
+
+      <div class="bulk-editor">
+        <label>① 名前の一括入力</label>
+
+        <div class="numbered-editor">
+          <div class="line-numbers" id="nameNumbers">1</div>
+          <textarea id="bulkNames"
+            placeholder="田中さん&#10;佐藤さん&#10;鈴木さん&#10;高橋さん"
+            spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="bulk-editor">
+        <label>② サイト・URLの一括入力</label>
+
+        <div class="numbered-editor">
+          <div class="line-numbers" id="urlNumbers">1</div>
+          <textarea id="bulkUrls"
+            placeholder="https://example.com&#10;https://example.org&#10;https://example.net"
+            spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <button id="bulkApplyBtn" class="bulk-btn">
+        一括入力を反映する
+      </button>
+
+      <p class="help-text">
+        ※反映すると、現在の登録内容は置き換わります。<br>
+        ※空行は番号の対応を維持します。<br>
+        ※名前とURLの両方が空の行は登録されません。
+      </p>
+
+    </div>
+
+    <!-- 個別入力 -->
+
+    <h2>個別編集</h2>
 
     <div id="itemList" class="item-list"></div>
 
@@ -243,8 +376,6 @@
     </button>
 
     <p class="help-text">
-      名前とリンクを入力してください。<br>
-      リンクは空欄でも登録できます。<br>
       登録内容はブラウザに自動保存されます。
     </p>
 
@@ -253,350 +384,442 @@
 </div>
 
 <script>
-  const canvas = document.getElementById('wheelCanvas');
-  const ctx = canvas.getContext('2d');
 
-  const spinBtn = document.getElementById('spinBtn');
-  const itemList = document.getElementById('itemList');
-  const addBtn = document.getElementById('addBtn');
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
 
-  const resultBox = document.getElementById('resultBox');
-  const resultName = document.getElementById('resultName');
-  const resultAction = document.getElementById('resultAction');
+const spinBtn = document.getElementById('spinBtn');
+const itemList = document.getElementById('itemList');
+const addBtn = document.getElementById('addBtn');
 
-  const colors = [
-    '#FF6B6B',
-    '#4ECDC4',
-    '#45B7D1',
-    '#FFA07A',
-    '#98D8C8',
-    '#F7DC6F',
-    '#BB8FCE',
-    '#85C1E9'
-  ];
+const resultBox = document.getElementById('resultBox');
+const resultName = document.getElementById('resultName');
+const resultAction = document.getElementById('resultAction');
 
-  // 初期データ
-  const defaultItems = [
-    { name: '田中さん', url: 'https://example.com' },
-    { name: '佐藤さん', url: 'https://example.com' },
-    { name: '鈴木さん', url: 'https://example.com' },
-    { name: '高橋さん', url: 'https://example.com' }
-  ];
+const bulkNames = document.getElementById('bulkNames');
+const bulkUrls = document.getElementById('bulkUrls');
 
-  // 保存データの読み込み
-  function loadItems() {
-    try {
-      const saved = localStorage.getItem('linkRouletteItems');
+const nameNumbers = document.getElementById('nameNumbers');
+const urlNumbers = document.getElementById('urlNumbers');
 
-      if (!saved) return defaultItems.map(item => ({ ...item }));
+const colors = [
+  '#FF6B6B',
+  '#4ECDC4',
+  '#45B7D1',
+  '#FFA07A',
+  '#98D8C8',
+  '#F7DC6F',
+  '#BB8FCE',
+  '#85C1E9'
+];
 
-      const parsed = JSON.parse(saved);
+const defaultItems = [
+  { name: '田中さん', url: 'https://example.com' },
+  { name: '佐藤さん', url: 'https://example.com' },
+  { name: '鈴木さん', url: 'https://example.com' },
+  { name: '高橋さん', url: 'https://example.com' }
+];
 
-      if (!Array.isArray(parsed) || parsed.length < 2) {
-        return defaultItems.map(item => ({ ...item }));
-      }
+// 保存データの読み込み
 
-      return parsed.map(item => ({
-        name: String(item.name ?? ''),
-        url: String(item.url ?? '')
-      }));
+function loadItems() {
+  try {
+    const saved = localStorage.getItem('linkRouletteItems');
 
-    } catch (error) {
-      return defaultItems.map(item => ({ ...item }));
+    if (!saved) return defaultItems.map(item => ({...item}));
+
+    const parsed = JSON.parse(saved);
+
+    if (!Array.isArray(parsed) || parsed.length < 2) {
+      return defaultItems.map(item => ({...item}));
     }
+
+    return parsed.map(item => ({
+      name: String(item.name ?? ''),
+      url: String(item.url ?? '')
+    }));
+
+  } catch (error) {
+    return defaultItems.map(item => ({...item}));
   }
+}
 
-  let items = loadItems();
+let items = loadItems();
+let currentRotation = 0;
+let isSpinning = false;
 
-  let currentRotation = 0;
-  let isSpinning = false;
+// 保存
 
-  // データ保存
-  function saveItems() {
-    localStorage.setItem(
-      'linkRouletteItems',
-      JSON.stringify(items)
-    );
-  }
+function saveItems() {
+  localStorage.setItem(
+    'linkRouletteItems',
+    JSON.stringify(items)
+  );
+}
 
-  // 入力欄の描画
-  function renderInputs() {
-    itemList.innerHTML = '';
+// 行番号の更新
 
-    items.forEach((item, index) => {
+function updateLineNumbers(textarea, numberBox) {
 
-      const row = document.createElement('div');
-      row.className = 'item-row';
+  const lineCount = textarea.value.split('\n').length;
 
-      // 名前入力欄
-      const nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.placeholder = '名前';
-      nameInput.className = 'input-name';
-      nameInput.value = item.name;
+  numberBox.textContent = Array.from(
+    {length: lineCount},
+    (_, i) => i + 1
+  ).join('\n');
 
-      nameInput.addEventListener('input', (e) => {
-        items[index].name = e.target.value;
-        saveItems();
-        drawWheel();
-      });
+  numberBox.scrollTop = textarea.scrollTop;
+}
 
-      // URL入力欄
-      const urlInput = document.createElement('input');
-      urlInput.type = 'url';
-      urlInput.placeholder = 'https://...';
-      urlInput.className = 'input-url';
-      urlInput.value = item.url;
+// 2つの入力欄に行番号機能を設定
 
-      urlInput.addEventListener('input', (e) => {
-        items[index].url = e.target.value;
-        saveItems();
-      });
+function setupNumberedEditor(textarea, numberBox) {
 
-      // 削除ボタン
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '×';
-      delBtn.className = 'del-btn';
-      delBtn.title = '削除';
-      delBtn.type = 'button';
+  textarea.addEventListener('input', () => {
+    updateLineNumbers(textarea, numberBox);
+  });
 
-      delBtn.addEventListener('click', () => {
+  textarea.addEventListener('scroll', () => {
+    numberBox.scrollTop = textarea.scrollTop;
+  });
 
-        if (items.length <= 2) {
-          alert('ルーレットには2つ以上の項目が必要です。');
-          return;
-        }
+  updateLineNumbers(textarea, numberBox);
+}
 
-        items.splice(index, 1);
+setupNumberedEditor(bulkNames, nameNumbers);
+setupNumberedEditor(bulkUrls, urlNumbers);
 
-        saveItems();
-        renderInputs();
-        drawWheel();
+// 一括入力の反映
 
-      });
+document.getElementById('bulkApplyBtn')
+.addEventListener('click', () => {
 
-      row.appendChild(nameInput);
-      row.appendChild(urlInput);
-      row.appendChild(delBtn);
+  const names = bulkNames.value.split(/\r\n|\n|\r/);
+  const urls = bulkUrls.value.split(/\r\n|\n|\r/);
 
-      itemList.appendChild(row);
+  const maxLength = Math.max(names.length, urls.length);
 
+  const newItems = [];
+
+  for (let i = 0; i < maxLength; i++) {
+
+    const name = (names[i] ?? '').trim();
+    const url = (urls[i] ?? '').trim();
+
+    // 両方空の行はスキップ
+    if (name === '' && url === '') continue;
+
+    newItems.push({
+      name: name,
+      url: url
     });
   }
 
-  // ルーレットの描画
-  function drawWheel() {
-
-    const numItems = items.length;
-    const arcSize = (2 * Math.PI) / numItems;
-
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = canvas.width / 2;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < numItems; i++) {
-
-      const angle = currentRotation + i * arcSize;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-
-      ctx.arc(
-        centerX,
-        centerY,
-        radius,
-        angle,
-        angle + arcSize
-      );
-
-      ctx.closePath();
-
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.fill();
-
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#ffffff';
-      ctx.stroke();
-
-      // 名前の描画
-      ctx.save();
-
-      ctx.translate(centerX, centerY);
-      ctx.rotate(angle + arcSize / 2);
-
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px sans-serif';
-
-      ctx.shadowColor = 'rgba(0,0,0,0.4)';
-      ctx.shadowBlur = 4;
-
-      const label = items[i].name || `項目${i + 1}`;
-
-      ctx.fillText(label, radius - 20, 0, radius * 0.65);
-
-      ctx.restore();
-
-    }
+  if (newItems.length < 2) {
+    alert('ルーレットには2つ以上の項目が必要です。');
+    return;
   }
 
-  // ルーレットを回す
-  function spin() {
+  const confirmed = confirm(
+    `${newItems.length}件の項目を登録します。\n` +
+    '現在の登録内容は置き換わります。\n\n' +
+    'よろしいですか？'
+  );
 
-    if (isSpinning || items.length < 2) return;
+  if (!confirmed) return;
 
-    isSpinning = true;
-    spinBtn.disabled = true;
+  items = newItems;
 
-    resultBox.style.display = 'none';
+  currentRotation = 0;
 
-    // 5回転以上＋ランダムな回転
-    const spinAngle = Math.random() * 360 + 1800;
+  saveItems();
+  renderInputs();
+  drawWheel();
 
-    // 回転時間：3.5秒
-    const duration = 3500;
+  resultBox.style.display = 'none';
 
-    const startRotation = currentRotation;
+  alert(`${items.length}件の項目を登録しました！`);
 
-    const targetRotation =
-      startRotation + (spinAngle * Math.PI) / 180;
+});
 
-    const startTime = performance.now();
+// 個別入力欄の描画
 
-    function animate(currentTime) {
+function renderInputs() {
 
-      const elapsed = currentTime - startTime;
+  itemList.innerHTML = '';
 
-      const progress = Math.min(elapsed / duration, 1);
+  items.forEach((item, index) => {
 
-      // 徐々に減速する
-      const easeOut = 1 - Math.pow(1 - progress, 3);
+    const row = document.createElement('div');
+    row.className = 'item-row';
 
-      currentRotation =
-        startRotation +
-        (targetRotation - startRotation) * easeOut;
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = '名前';
+    nameInput.className = 'input-name';
+    nameInput.value = item.name;
 
+    nameInput.addEventListener('input', (e) => {
+      items[index].name = e.target.value;
+      saveItems();
+      drawWheel();
+    });
+
+    const urlInput = document.createElement('input');
+    urlInput.type = 'url';
+    urlInput.placeholder = 'https://...';
+    urlInput.className = 'input-url';
+    urlInput.value = item.url;
+
+    urlInput.addEventListener('input', (e) => {
+      items[index].url = e.target.value;
+      saveItems();
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '×';
+    delBtn.className = 'del-btn';
+    delBtn.title = '削除';
+    delBtn.type = 'button';
+
+    delBtn.addEventListener('click', () => {
+
+      if (items.length <= 2) {
+        alert('ルーレットには2つ以上の項目が必要です。');
+        return;
+      }
+
+      items.splice(index, 1);
+
+      saveItems();
+      renderInputs();
       drawWheel();
 
-      if (progress < 1) {
+    });
 
-        requestAnimationFrame(animate);
+    row.appendChild(nameInput);
+    row.appendChild(urlInput);
+    row.appendChild(delBtn);
 
-      } else {
+    itemList.appendChild(row);
 
-        isSpinning = false;
-        spinBtn.disabled = false;
+  });
 
-        determineWinner();
+}
 
-      }
-    }
+// ルーレットの描画
 
-    requestAnimationFrame(animate);
+function drawWheel() {
+
+  const numItems = items.length;
+  const arcSize = (2 * Math.PI) / numItems;
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = canvas.width / 2;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < numItems; i++) {
+
+    const angle = currentRotation + i * arcSize;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+
+    ctx.arc(
+      centerX,
+      centerY,
+      radius,
+      angle,
+      angle + arcSize
+    );
+
+    ctx.closePath();
+
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    ctx.save();
+
+    ctx.translate(centerX, centerY);
+    ctx.rotate(angle + arcSize / 2);
+
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px sans-serif';
+
+    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+    ctx.shadowBlur = 4;
+
+    const label = items[i].name || `項目${i + 1}`;
+
+    ctx.fillText(label, radius - 20, 0, radius * 0.65);
+
+    ctx.restore();
 
   }
 
-  // 当選者の決定
-  function determineWinner() {
+}
 
-    const numItems = items.length;
-    const arcSize = (2 * Math.PI) / numItems;
+// ルーレットを回す
 
-    // 上部の針の位置を計算
-    const pointerAngle =
-      (1.5 * Math.PI -
-        (currentRotation % (2 * Math.PI)) +
-        2 * Math.PI) % (2 * Math.PI);
+function spin() {
 
-    const winnerIndex =
-      Math.floor(pointerAngle / arcSize) % numItems;
+  if (isSpinning || items.length < 2) return;
 
-    const winner = items[winnerIndex];
+  isSpinning = true;
+  spinBtn.disabled = true;
 
-    // 当選者の名前を表示
-    resultName.textContent =
-      `🎉 当選：${winner.name || '名称未設定'}`;
+  resultBox.style.display = 'none';
 
-    resultAction.innerHTML = '';
+  const spinAngle = Math.random() * 360 + 1800;
+  const duration = 3500;
 
-    // リンクが登録されている場合
-    if (winner.url && winner.url.trim() !== '') {
+  const startRotation = currentRotation;
+
+  const targetRotation =
+    startRotation + (spinAngle * Math.PI) / 180;
+
+  const startTime = performance.now();
+
+  function animate(currentTime) {
+
+    const elapsed = currentTime - startTime;
+
+    const progress = Math.min(elapsed / duration, 1);
+
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+
+    currentRotation =
+      startRotation +
+      (targetRotation - startRotation) * easeOut;
+
+    drawWheel();
+
+    if (progress < 1) {
+
+      requestAnimationFrame(animate);
+
+    } else {
+
+      isSpinning = false;
+      spinBtn.disabled = false;
+
+      determineWinner();
+
+    }
+
+  }
+
+  requestAnimationFrame(animate);
+
+}
+
+// 当選者の決定
+
+function determineWinner() {
+
+  const numItems = items.length;
+  const arcSize = (2 * Math.PI) / numItems;
+
+  const pointerAngle =
+    (1.5 * Math.PI -
+      (currentRotation % (2 * Math.PI)) +
+      2 * Math.PI) % (2 * Math.PI);
+
+  const winnerIndex =
+    Math.floor(pointerAngle / arcSize) % numItems;
+
+  const winner = items[winnerIndex];
+
+  resultName.textContent =
+    `🎉 当選：${winner.name || '名称未設定'}`;
+
+  resultAction.innerHTML = '';
+
+  if (winner.url && winner.url.trim() !== '') {
+
+    let validUrl = null;
+
+    try {
+      const parsed = new URL(winner.url.trim());
+
+      if (
+        parsed.protocol === 'https:' ||
+        parsed.protocol === 'http:'
+      ) {
+        validUrl = parsed.href;
+      }
+
+    } catch (error) {
+      validUrl = null;
+    }
+
+    if (validUrl) {
 
       const linkBtn = document.createElement('a');
 
-      let validUrl = null;
+      linkBtn.href = validUrl;
+      linkBtn.target = '_blank';
+      linkBtn.rel = 'noopener noreferrer';
+      linkBtn.className = 'open-link-btn';
+      linkBtn.textContent = 'リンクを開く ↗';
 
-      try {
-        const parsedUrl = new URL(winner.url.trim());
-
-        if (
-          parsedUrl.protocol === 'https:' ||
-          parsedUrl.protocol === 'http:'
-        ) {
-          validUrl = parsedUrl.href;
-        }
-
-      } catch (error) {
-        validUrl = null;
-      }
-
-      if (validUrl) {
-
-        linkBtn.href = validUrl;
-        linkBtn.target = '_blank';
-        linkBtn.rel = 'noopener noreferrer';
-        linkBtn.className = 'open-link-btn';
-        linkBtn.textContent = 'リンクを開く ↗';
-
-        resultAction.appendChild(linkBtn);
-
-      } else {
-
-        const note = document.createElement('div');
-        note.className = 'no-link-note';
-        note.textContent = '※有効なHTTP/HTTPSリンクではありません';
-
-        resultAction.appendChild(note);
-
-      }
+      resultAction.appendChild(linkBtn);
 
     } else {
 
       const note = document.createElement('div');
       note.className = 'no-link-note';
-      note.textContent = '※この項目にはリンクが設定されていません';
+      note.textContent = '※有効なHTTP/HTTPSリンクではありません';
 
       resultAction.appendChild(note);
 
     }
 
-    resultBox.style.display = 'block';
+  } else {
+
+    const note = document.createElement('div');
+    note.className = 'no-link-note';
+    note.textContent = '※この項目にはリンクが設定されていません';
+
+    resultAction.appendChild(note);
 
   }
 
-  // 項目の追加
-  addBtn.addEventListener('click', () => {
+  resultBox.style.display = 'block';
 
-    items.push({
-      name: '',
-      url: ''
-    });
+}
 
-    saveItems();
-    renderInputs();
-    drawWheel();
+// 項目追加
 
+addBtn.addEventListener('click', () => {
+
+  items.push({
+    name: '',
+    url: ''
   });
 
-  // ルーレットボタン
-  spinBtn.addEventListener('click', spin);
-
-  // 初期描画
+  saveItems();
   renderInputs();
   drawWheel();
+
+});
+
+// ルーレットボタン
+
+spinBtn.addEventListener('click', spin);
+
+// 初期描画
+
+renderInputs();
+drawWheel();
 
 </script>
 
