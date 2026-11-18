@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -14,6 +15,7 @@
       display: flex;
       justify-content: center;
     }
+
     .container {
       max-width: 900px;
       width: 100%;
@@ -24,20 +26,25 @@
       display: flex;
       flex-wrap: wrap;
       gap: 30px;
+      box-sizing: border-box;
     }
+
     .wheel-section {
       flex: 1;
-      min-width: 300px;
+      min-width: 280px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     .wheel-wrapper {
       position: relative;
       width: 320px;
-      height: 320px;
+      max-width: 100%;
+      aspect-ratio: 1;
       margin-bottom: 20px;
     }
+
     .pointer {
       position: absolute;
       top: -12px;
@@ -51,12 +58,14 @@
       z-index: 10;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
     }
+
     canvas {
       width: 100%;
       height: 100%;
       border-radius: 50%;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
+
     .spin-btn {
       background: #2ecc71;
       color: #fff;
@@ -69,9 +78,14 @@
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
     }
+
     .spin-btn:hover { background: #27ae60; }
     .spin-btn:active { transform: scale(0.97); }
-    .spin-btn:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
+    .spin-btn:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
 
     .result-box {
       margin-top: 20px;
@@ -84,12 +98,15 @@
       box-sizing: border-box;
       display: none;
     }
+
     .result-name {
       font-size: 22px;
       font-weight: bold;
       color: #2c3e50;
       margin-bottom: 12px;
+      overflow-wrap: anywhere;
     }
+
     .open-link-btn {
       display: inline-block;
       background: #3498db;
@@ -100,7 +117,9 @@
       font-weight: bold;
       transition: background 0.2s;
     }
+
     .open-link-btn:hover { background: #2980b9; }
+
     .no-link-note {
       font-size: 14px;
       color: #7f8c8d;
@@ -108,14 +127,16 @@
 
     .settings-section {
       flex: 1;
-      min-width: 300px;
+      min-width: 280px;
     }
+
     h2 {
       margin-top: 0;
       font-size: 18px;
       border-bottom: 2px solid #eee;
       padding-bottom: 8px;
     }
+
     .item-list {
       display: flex;
       flex-direction: column;
@@ -125,19 +146,25 @@
       margin-bottom: 12px;
       padding-right: 4px;
     }
+
     .item-row {
       display: flex;
       gap: 6px;
       align-items: center;
     }
+
     .item-row input {
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      min-width: 0;
+      box-sizing: border-box;
     }
+
     .input-name { width: 35%; }
     .input-url { width: 55%; }
+
     .del-btn {
       background: #e74c3c;
       color: #fff;
@@ -145,10 +172,13 @@
       border-radius: 6px;
       width: 32px;
       height: 34px;
+      flex-shrink: 0;
       cursor: pointer;
       font-weight: bold;
     }
+
     .del-btn:hover { background: #c0392b; }
+
     .add-btn {
       background: #34495e;
       color: #fff;
@@ -159,113 +189,207 @@
       font-size: 14px;
       width: 100%;
     }
+
     .add-btn:hover { background: #2c3e50; }
+
+    .help-text {
+      font-size: 12px;
+      color: #888;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      .container { padding: 16px; gap: 25px; }
+      .wheel-section, .settings-section { min-width: 100%; }
+      .wheel-wrapper { width: 280px; }
+    }
   </style>
 </head>
+
 <body>
 
 <div class="container">
+
   <!-- ルーレット表示エリア -->
   <div class="wheel-section">
+
     <div class="wheel-wrapper">
       <div class="pointer"></div>
       <canvas id="wheelCanvas" width="400" height="400"></canvas>
     </div>
-    <button id="spinBtn" class="spin-btn">ルーレットを回す</button>
+
+    <button id="spinBtn" class="spin-btn">
+      ルーレットを回す
+    </button>
 
     <div id="resultBox" class="result-box">
       <div id="resultName" class="result-name"></div>
       <div id="resultAction"></div>
     </div>
+
   </div>
 
   <!-- 項目編集エリア -->
   <div class="settings-section">
+
     <h2>名前とリンクの設定</h2>
+
     <div id="itemList" class="item-list"></div>
-    <button id="addBtn" class="add-btn">＋ 項目を追加する</button>
+
+    <button id="addBtn" class="add-btn">
+      ＋ 項目を追加する
+    </button>
+
+    <p class="help-text">
+      名前とリンクを入力してください。<br>
+      リンクは空欄でも登録できます。<br>
+      登録内容はブラウザに自動保存されます。
+    </p>
+
   </div>
+
 </div>
 
 <script>
   const canvas = document.getElementById('wheelCanvas');
   const ctx = canvas.getContext('2d');
+
   const spinBtn = document.getElementById('spinBtn');
   const itemList = document.getElementById('itemList');
   const addBtn = document.getElementById('addBtn');
+
   const resultBox = document.getElementById('resultBox');
   const resultName = document.getElementById('resultName');
   const resultAction = document.getElementById('resultAction');
 
-  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'];
+  const colors = [
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#FFA07A',
+    '#98D8C8',
+    '#F7DC6F',
+    '#BB8FCE',
+    '#85C1E9'
+  ];
 
-  // 初期データ（ローカルストレージから読み込み）
-  let items = JSON.parse(localStorage.getItem('linkRouletteItems')) || [
+  // 初期データ
+  const defaultItems = [
     { name: '田中さん', url: 'https://example.com' },
     { name: '佐藤さん', url: 'https://example.com' },
     { name: '鈴木さん', url: 'https://example.com' },
     { name: '高橋さん', url: 'https://example.com' }
   ];
 
+  // 保存データの読み込み
+  function loadItems() {
+    try {
+      const saved = localStorage.getItem('linkRouletteItems');
+
+      if (!saved) return defaultItems.map(item => ({ ...item }));
+
+      const parsed = JSON.parse(saved);
+
+      if (!Array.isArray(parsed) || parsed.length < 2) {
+        return defaultItems.map(item => ({ ...item }));
+      }
+
+      return parsed.map(item => ({
+        name: String(item.name ?? ''),
+        url: String(item.url ?? '')
+      }));
+
+    } catch (error) {
+      return defaultItems.map(item => ({ ...item }));
+    }
+  }
+
+  let items = loadItems();
+
   let currentRotation = 0;
   let isSpinning = false;
 
+  // データ保存
   function saveItems() {
-    localStorage.setItem('linkRouletteItems', JSON.stringify(items));
+    localStorage.setItem(
+      'linkRouletteItems',
+      JSON.stringify(items)
+    );
   }
 
+  // 入力欄の描画
   function renderInputs() {
     itemList.innerHTML = '';
+
     items.forEach((item, index) => {
+
       const row = document.createElement('div');
       row.className = 'item-row';
 
+      // 名前入力欄
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.placeholder = '名前';
       nameInput.className = 'input-name';
       nameInput.value = item.name;
+
       nameInput.addEventListener('input', (e) => {
         items[index].name = e.target.value;
         saveItems();
         drawWheel();
       });
 
+      // URL入力欄
       const urlInput = document.createElement('input');
       urlInput.type = 'url';
       urlInput.placeholder = 'https://...';
       urlInput.className = 'input-url';
       urlInput.value = item.url;
+
       urlInput.addEventListener('input', (e) => {
         items[index].url = e.target.value;
         saveItems();
       });
 
+      // 削除ボタン
       const delBtn = document.createElement('button');
       delBtn.textContent = '×';
       delBtn.className = 'del-btn';
       delBtn.title = '削除';
+      delBtn.type = 'button';
+
       delBtn.addEventListener('click', () => {
+
         if (items.length <= 2) {
           alert('ルーレットには2つ以上の項目が必要です。');
           return;
         }
+
         items.splice(index, 1);
+
         saveItems();
         renderInputs();
         drawWheel();
+
       });
 
       row.appendChild(nameInput);
       row.appendChild(urlInput);
       row.appendChild(delBtn);
+
       itemList.appendChild(row);
+
     });
   }
 
+  // ルーレットの描画
   function drawWheel() {
+
     const numItems = items.length;
     const arcSize = (2 * Math.PI) / numItems;
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     const radius = canvas.width / 2;
@@ -273,87 +397,208 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < numItems; i++) {
+
       const angle = currentRotation + i * arcSize;
+
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
+
+      ctx.arc(
+        centerX,
+        centerY,
+        radius,
+        angle,
+        angle + arcSize
+      );
+
       ctx.closePath();
 
       ctx.fillStyle = colors[i % colors.length];
       ctx.fill();
+
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
 
-      // テキスト描画
+      // 名前の描画
       ctx.save();
+
       ctx.translate(centerX, centerY);
       ctx.rotate(angle + arcSize / 2);
+
       ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 20px sans-serif';
+
       ctx.shadowColor = 'rgba(0,0,0,0.4)';
       ctx.shadowBlur = 4;
+
       const label = items[i].name || `項目${i + 1}`;
-      ctx.fillText(label, radius - 20, 7);
+
+      ctx.fillText(label, radius - 20, 0, radius * 0.65);
+
       ctx.restore();
+
     }
   }
 
+  // ルーレットを回す
   function spin() {
+
     if (isSpinning || items.length < 2) return;
+
     isSpinning = true;
     spinBtn.disabled = true;
+
     resultBox.style.display = 'none';
 
-    const spinAngle = Math.random() * 360 + 1800; // 5回転以上＋ランダム
-    const duration = 3500; // 3.5秒
+    // 5回転以上＋ランダムな回転
+    const spinAngle = Math.random() * 360 + 1800;
+
+    // 回転時間：3.5秒
+    const duration = 3500;
+
     const startRotation = currentRotation;
-    const targetRotation = startRotation + (spinAngle * Math.PI) / 180;
+
+    const targetRotation =
+      startRotation + (spinAngle * Math.PI) / 180;
+
     const startTime = performance.now();
 
     function animate(currentTime) {
+
       const elapsed = currentTime - startTime;
+
       const progress = Math.min(elapsed / duration, 1);
-      // イージング（徐々に減速）
+
+      // 徐々に減速する
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      currentRotation = startRotation + (targetRotation - startRotation) * easeOut;
+
+      currentRotation =
+        startRotation +
+        (targetRotation - startRotation) * easeOut;
 
       drawWheel();
 
       if (progress < 1) {
+
         requestAnimationFrame(animate);
+
       } else {
+
         isSpinning = false;
         spinBtn.disabled = false;
+
         determineWinner();
+
       }
     }
 
     requestAnimationFrame(animate);
+
   }
 
+  // 当選者の決定
   function determineWinner() {
+
     const numItems = items.length;
     const arcSize = (2 * Math.PI) / numItems;
-    // 上部の針（1.5 * Math.PI）の位置にあるセグメントを計算
-    const pointerAngle = (1.5 * Math.PI - (currentRotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-    const winnerIndex = Math.floor(pointerAngle / arcSize) % numItems;
+
+    // 上部の針の位置を計算
+    const pointerAngle =
+      (1.5 * Math.PI -
+        (currentRotation % (2 * Math.PI)) +
+        2 * Math.PI) % (2 * Math.PI);
+
+    const winnerIndex =
+      Math.floor(pointerAngle / arcSize) % numItems;
+
     const winner = items[winnerIndex];
 
-    resultName.textContent = `🎉 当選：${winner.name || '名称未設定'}`;
+    // 当選者の名前を表示
+    resultName.textContent =
+      `🎉 当選：${winner.name || '名称未設定'}`;
+
     resultAction.innerHTML = '';
 
+    // リンクが登録されている場合
     if (winner.url && winner.url.trim() !== '') {
+
       const linkBtn = document.createElement('a');
-      linkBtn.href = winner.url.trim();
-      linkBtn.target = '_blank';
-      linkBtn.rel = 'noopener noreferrer';
-      linkBtn.className = 'open-link-btn';
-      linkBtn.textContent = 'リンクを開く ↗';
-      resultAction.appendChild(linkBtn);
+
+      let validUrl = null;
+
+      try {
+        const parsedUrl = new URL(winner.url.trim());
+
+        if (
+          parsedUrl.protocol === 'https:' ||
+          parsedUrl.protocol === 'http:'
+        ) {
+          validUrl = parsedUrl.href;
+        }
+
+      } catch (error) {
+        validUrl = null;
+      }
+
+      if (validUrl) {
+
+        linkBtn.href = validUrl;
+        linkBtn.target = '_blank';
+        linkBtn.rel = 'noopener noreferrer';
+        linkBtn.className = 'open-link-btn';
+        linkBtn.textContent = 'リンクを開く ↗';
+
+        resultAction.appendChild(linkBtn);
+
+      } else {
+
+        const note = document.createElement('div');
+        note.className = 'no-link-note';
+        note.textContent = '※有効なHTTP/HTTPSリンクではありません';
+
+        resultAction.appendChild(note);
+
+      }
+
     } else {
+
       const note = document.createElement('div');
       note.className = 'no-link-note';
       note.textContent = '※この項目にはリンクが設定されていません';
+
       resultAction.appendChild(note);
+
+    }
+
+    resultBox.style.display = 'block';
+
+  }
+
+  // 項目の追加
+  addBtn.addEventListener('click', () => {
+
+    items.push({
+      name: '',
+      url: ''
+    });
+
+    saveItems();
+    renderInputs();
+    drawWheel();
+
+  });
+
+  // ルーレットボタン
+  spinBtn.addEventListener('click', spin);
+
+  // 初期描画
+  renderInputs();
+  drawWheel();
+
+</script>
+
+</body>
+</html>
